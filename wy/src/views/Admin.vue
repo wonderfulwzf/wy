@@ -3,11 +3,11 @@
   <Layout>
    <Header>
     <Menu mode="horizontal" theme="dark" active-name="1">
-     <Row :gutter="16" justify="end" type="flex">
-      <Col span="6">
-       <div><span style="color: red;font-family:Helvetica Neue;font-size:16px;font-weight:bold" class="">往忆视频</span></div>
+     <Row>
+      <Col span="3">
+       <div><h1 style="color:#ff9900;">往&nbsp;忆&nbsp;视&nbsp;频</h1></div>
       </Col>
-      <Col span="6">
+      <Col span="9">
        <div>col-6</div>
       </Col>
       <Col span="6">
@@ -55,8 +55,8 @@
           <Icon type="ios-navigate"></Icon>
           系统管理
          </template>
-         <MenuItem name="1">用户管理</MenuItem>
-         <MenuItem name="1">角色管理</MenuItem>
+         <MenuItem name="1-1">用户管理</MenuItem>
+         <MenuItem name="1-2">角色管理</MenuItem>
          <MenuItem name="1-3">资源管理</MenuItem>
         </Submenu>
         <Submenu name="2">
@@ -80,12 +80,12 @@
       <Content
        :style="{ padding: '24px', minHeight: '280px', background: '#fff' }"
       >
-       Content
+      欢迎你！
       </Content>
      </Layout>
     </Content>
    </Layout>
-   <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
+   <Footer class="layout-footer-center">2020-2021 &copy; create By:王智芳</Footer>
   </Layout>
  </div>
 </template>
