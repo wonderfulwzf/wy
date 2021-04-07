@@ -12,7 +12,7 @@
     <input type="password" placeholder="Password" />
    </div>
   </div>
-  <input class="loginButton" type="button" value="Login" v-on:click="Login()" />
+  <div><input class="loginButton" type="button" value="登录" v-on:click="Login()" /></div>
  </div>
  </div>
 </template>
@@ -30,7 +30,7 @@ export default {
  methods: {
   Login() {
    let _this = this;
-   _this.$router.push("/");
+   _this.$router.push("/welcome");
   }
  },
 };
@@ -41,7 +41,7 @@ export default {
 		width: 100%;
 		height: 100%;
 		top: 0px;
-		background-image: url("C:/Users/80504/Desktop/wy/wy/public/static/img/bgimg.jpg");
+		background-image: url("../../public/static/img/bgimg.jpg");
         background-repeat: no-repeat;	/* 背景图片不重复 */
 	}
 </style>

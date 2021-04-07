@@ -17,7 +17,7 @@
       <Col span="2">
        <Dropdown>
         <div>
-         <Avatar icon="ios-person" size="large" />
+         <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" size="large" />
          <a href="javascript:void(0)"> </a>
         </div>
         <DropdownMenu slot="list">
@@ -45,30 +45,32 @@
      </Breadcrumb>
     </Breadcrumb>
     <Content
-     :style="{ padding: '24px 0', minHeight: '536px', background: '#fff' }"
+     :style="{ padding: '24px 0', minHeight: '700px', background: '#fff' }"
     >
      <Layout>
       <Sider hide-trigger :style="{ background: '#fff' }">
-       <Menu active-name="1-2" theme="light" width="auto" :open-names="['1']">
-        <Submenu name="1">
+       <Menu  theme="light" width="auto"  accordion  v-bind:active-name=business :open-names="['system','business','file']">
+         <MenuItem name="welcome" to="/welcome"><Icon type="logo-youtube" />
+         欢迎</MenuItem>
+        <Submenu name="system">
          <template slot="title">
-          <Icon type="ios-navigate"></Icon>
+          <Icon type="ios-people" />
           系统管理
          </template>
-         <MenuItem name="1-1">用户管理</MenuItem>
-         <MenuItem name="1-2">角色管理</MenuItem>
-         <MenuItem name="1-3">资源管理</MenuItem>
+         <MenuItem name="user" to="/user">用户管理</MenuItem>
+         <MenuItem name="member">角色管理</MenuItem>
+         <MenuItem name="resource">资源管理</MenuItem>
         </Submenu>
-        <Submenu name="2">
+        <Submenu name="business">
          <template slot="title">
           <Icon type="ios-keypad"></Icon>
           业务管理
          </template>
-         <MenuItem name="2-1">视频管理</MenuItem>
-         <MenuItem name="2-2">演员管理</MenuItem>
+         <MenuItem name="video" to="/video">视频管理</MenuItem>
+         <MenuItem name="actor" to="/actor">演员管理</MenuItem>
          <MenuItem name="3-2">会员管理</MenuItem>
         </Submenu>
-        <Submenu name="3">
+        <Submenu name="file">
          <template slot="title">
           <Icon type="ios-analytics"></Icon>
           文件管理
@@ -80,7 +82,8 @@
       <Content
        :style="{ padding: '24px', minHeight: '280px', background: '#fff' }"
       >
-      欢迎你！
+      <div><router-view /></div>
+      
       </Content>
      </Layout>
     </Content>
@@ -90,7 +93,20 @@
  </div>
 </template>
 <script>
-export default {};
+export default {
+ name: "admin",
+ data: function () {
+  return {
+    business:"",
+  };
+ },
+ mounted: function () {
+   let _this = this;
+   _this.business = _this.$route.name;
+ },
+ methods: {
+ },
+};
 </script>
 <style scoped>
 .layout {
