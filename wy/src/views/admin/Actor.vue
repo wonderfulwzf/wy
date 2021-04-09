@@ -9,7 +9,17 @@
      ><Icon type="md-add" />新增</Button
     ></Col
    >
-   <Col span="16"><Page :total="100" show-sizer show-total /></Col>
+   <Col span="16">
+    <Page
+     :current="pageNo"
+     :total="totalRecord"
+     :page-size="pageSize"
+     @on-change="handleCurrentChange"
+     @on-page-size-change="handleSizeChange"
+     show-sizer
+     show-total
+    />
+   </Col>
   </Row>
   <Row :gutter="16" style="height: 650px">
    <Col span="6" v-for="actor in actors" v-bind:key="actor.id">
@@ -25,31 +35,12 @@
        </div>
        <h3>{{ actor.name }}</h3>
        <p>{{ actor.intro }}</p>
-       <Button type="warning" @click="modal_update = true" style="margin: 3px"
+       <Button type="warning" @click="toUpdate(actor)" style="margin: 3px"
         ><Icon type="md-brush" />修改</Button
        >
        <Button type="error" style="margin: 3px" @click="modal_delete = true"
         ><Icon type="md-close" />删除</Button
        >
-       <!-- 修改 -->
-       <Modal
-        v-model="modal_update"
-        title="修改演员信息"
-        @on-ok="update"
-        @on-cancel="cancel"
-       >
-        <Form label-position="left" :label-width="100">
-         <FormItem label="名称">
-          <Input :value="actor.name"></Input>
-         </FormItem>
-         <FormItem label="图片">
-          <Input :value="actor.image"></Input>
-         </FormItem>
-         <FormItem label="简介">
-          <Input :value="actor.intro"></Input>
-         </FormItem>
-        </Form>
-       </Modal>
        <!-- 删除 -->
        <Modal v-model="modal_delete" width="360">
         <p slot="header" style="color: #f60; text-align: center">
@@ -79,16 +70,38 @@
   <Modal v-model="modal_add" title="新增演员" @on-ok="add" @on-cancel="cancel">
    <Form label-position="left" :label-width="100">
     <FormItem label="名称">
-     <Input></Input>
+     <Input v-model="actor.name"></Input>
     </FormItem>
     <FormItem label="图片">
-     <Input></Input>
+     <Input v-model="actor.image"></Input>
     </FormItem>
     <FormItem label="简介">
-     <Input></Input>
+     <Input v-model="actor.intro"></Input>
     </FormItem>
    </Form>
   </Modal>
+   <!-- 修改 -->
+       <Modal
+        v-model="modal_update"
+        title="修改演员信息"
+        @on-ok="update()"
+        @on-cancel="cancel"
+       >
+        <Form label-position="left" :label-width="100">
+         <FormItem label="id">
+          <Input v-model="actor.id"></Input>
+         </FormItem>
+         <FormItem label="名称">
+          <Input v-model="actor.name"></Input>
+         </FormItem>
+         <FormItem label="图片">
+          <Input v-model="actor.image"></Input>
+         </FormItem>
+         <FormItem label="简介">
+          <Input v-model="actor.intro"></Input>
+         </FormItem>
+        </Form>
+       </Modal>
  </div>
 </template>
 <script>
@@ -97,50 +110,127 @@ export default {
  //返回值
  data: function () {
   return {
-   //模态框
-   modal_update: false,
-   modal_add: false,
-   modal_delete: false,
-   modal_loading: false,
-   actors: [],
+   modal_update: false, //修改模态框
+   modal_add: false, //添加模态框
+   modal_delete: false, //删除模态框
+   modal_loading: false, //加载模态框
+   actors: [], //演员列表
+   //分页查询参数
+   pageNo: 1,
+   totalRecord: 0,
+   pageSize: 3,
+   actor: {}, //演员
   };
  },
  mounted: function () {
   let _this = this;
-  _this.list();
+  _this.list(1);
  },
  methods: {
   //列表查询
-  list() {
+  list(pageNo) {
    let _this = this;
-   _this.$ajax.get(process.env.VUE_APP_SERVER + "/business/list").then(
-    //响应结果
-    (response) => {
-     console.log("查询演员列表", response);
-     let resp = response.data;
-     _this.actors = resp.data.records;
-    }
-   );
+   _this.$ajax
+    .post(process.env.VUE_APP_SERVER + "/business/list", {
+     pageNo: pageNo,
+     pageSize: _this.pageSize,
+    })
+    .then(
+     //响应结果
+     (response) => {
+      if (response.data.success) {
+       console.log("查询演员列表", response);
+       let resp = response.data.data;
+       _this.actors = resp.records;
+       _this.totalRecord = resp.totalRecord;
+       this.$Message.info("获取列表信息ok");
+      } else {
+       this.$Message.error("出错了,告知老王修复");
+      }
+     }
+    );
   },
-  //模态框操作
+  //页码改变
+  handleCurrentChange(page) {
+   this.list(page);
+  },
+  //改变页长
+  handleSizeChange(size) {
+   let _this = this;
+   _this.pageSize = size;
+   _this.list(_this.pageNo);
+  },
+  //新增演员
   add() {
-   this.$Message.info("Clicked ok");
+   let _this = this;
+   _this.$ajax
+    .post(process.env.VUE_APP_SERVER + "/business/add", _this.actor)
+    .then(
+     //响应结果
+     (response) => {
+      if (response.data.success) {
+       console.log("新增演员信息", response);
+       _this.list(1);
+       this.$Message.info("新增演员ok");
+       _this.actor = {};
+      } else {
+       this.$Message.error("出错了,告知老王修复");
+      }
+     }
+    );
   },
+  //打开
+  toUpdate(actor) {
+    console.log(actor);
+   let _this = this;
+   //消除双向绑定，复制对象
+   _this.actor = $.extend({}, actor);
+   console.log
+   _this.modal_update = true;
+  },
+  //修改演员
   update() {
-   this.$Message.info("Clicked ok");
+   let _this = this;
+   _this.$ajax
+    .post(process.env.VUE_APP_SERVER + "/business/update", _this.actor)
+    .then(
+     //响应结果
+     (response) => {
+      if (response.data.success) {
+       console.log("修改演员信息", response);
+       _this.list(1);
+       this.$Message.info("修改演员ok");
+       _this.actor = {};
+      } else {
+       this.$Message.error("出错了,告知老王修复");
+      }
+     }
+    );
   },
+  //取消
   cancel() {
-   this.$Message.info("Clicked cancel");
+   this.$Message.info("已取消操作");
   },
   //删除
   del(id) {
    this.modal_loading = true;
    setTimeout(() => {
-     console.log(id);
-    this.modal_loading = false;
-    this.modal_delete = false;
-    this.$Message.success("Successfully delete");
-   }, 2000);
+    let _this = this;
+    _this.$ajax.get(process.env.VUE_APP_SERVER + "/business/delete/" + id).then(
+     //响应结果
+     (response) => {
+      this.modal_loading = false;
+      this.modal_delete = false;
+      if (response.data.success) {
+       console.log("删除演员信息", response);
+       _this.list(1);
+       this.$Message.info("删除演员ok");
+      } else {
+       this.$Message.error("出错了,告知老王修复");
+      }
+     }
+    );
+   }, 1000);
   },
  },
 };
