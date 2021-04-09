@@ -91,7 +91,7 @@
   >
    <Form label-position="left" :label-width="100">
     <FormItem label="id">
-     <Input v-model="actor.id"></Input>
+     <Input v-model="actor.id" disabled></Input>
     </FormItem>
     <FormItem label="名称">
      <Input v-model="actor.name"></Input>
@@ -109,6 +109,7 @@
 <script>
 export default {
  name: "actor",
+
  //返回值
  data: function () {
   return {
@@ -167,7 +168,7 @@ export default {
        }
       }
      );
-   }, 1000);
+   }, 500);
   },
   //页码改变
   handleCurrentChange(page) {
@@ -182,8 +183,7 @@ export default {
   //新增演员
   add() {
    let _this = this;
-
-   this.$Spin.hide();
+   _this.$Spin.hide();
    _this.$ajax
     .post(process.env.VUE_APP_SERVER + "/business/add", _this.actor)
     .then(
@@ -192,10 +192,13 @@ export default {
       if (response.data.success) {
        console.log("新增演员信息", response);
        _this.list(1);
-       this.$Message.info("新增演员ok");
+       _this.$Message.info("新增演员ok");
        _this.actor = {};
       } else {
-       this.$Message.error("出错了,告知老王修复");
+       _this.$Notice.error({
+        title: response.data.message,
+       });
+       //_this.$Message.error("出错了,告知老王修复");
       }
      }
     );
@@ -223,12 +226,12 @@ export default {
     //消除双向绑定，复制对象
     _this.actor = $.extend({}, actor);
     _this.modal_update = true;
-   }, 1000);
+   }, 500);
   },
   //打开新增模态框
   toAdd() {
    let _this = this;
-   this.$Spin.show({
+   _this.$Spin.show({
     render: (h) => {
      return h("div", [
       h("Icon", {
@@ -243,11 +246,11 @@ export default {
     },
    });
    setTimeout(() => {
-    this.$Spin.hide();
+    _this.$Spin.hide();
     //消除双向绑定，复制对象
     _this.actor = {};
     _this.modal_add = true;
-   }, 1000);
+   }, 500);
   },
   //修改演员
   update() {
@@ -261,10 +264,10 @@ export default {
       if (response.data.success) {
        console.log("修改演员信息", response);
        _this.list(1);
-       this.$Message.info("修改演员ok");
+       _this.$Message.info("修改演员ok");
        _this.actor = {};
       } else {
-       this.$Message.error("出错了,告知老王修复");
+       _this.$Message.error("出错了,告知老王修复");
       }
      }
     );
@@ -292,7 +295,7 @@ export default {
       }
      }
     );
-   }, 1000);
+   }, 500);
   },
  },
 };
