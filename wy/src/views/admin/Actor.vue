@@ -2,10 +2,12 @@
  <div>
   <Row style="margin-bottom: 30px">
    <Col span="2"
-    ><Button type="primary"><Icon type="ios-refresh" />刷新</Button></Col
+    ><Button type="primary" @click="list(1)"
+     ><Icon type="ios-refresh" />刷新</Button
+    ></Col
    >
    <Col span="3"
-    ><Button type="primary" @click="modal_add = true"
+    ><Button type="primary" @click="toAdd"
      ><Icon type="md-add" />新增</Button
     ></Col
    >
@@ -80,28 +82,28 @@
     </FormItem>
    </Form>
   </Modal>
-   <!-- 修改 -->
-       <Modal
-        v-model="modal_update"
-        title="修改演员信息"
-        @on-ok="update()"
-        @on-cancel="cancel"
-       >
-        <Form label-position="left" :label-width="100">
-         <FormItem label="id">
-          <Input v-model="actor.id"></Input>
-         </FormItem>
-         <FormItem label="名称">
-          <Input v-model="actor.name"></Input>
-         </FormItem>
-         <FormItem label="图片">
-          <Input v-model="actor.image"></Input>
-         </FormItem>
-         <FormItem label="简介">
-          <Input v-model="actor.intro"></Input>
-         </FormItem>
-        </Form>
-       </Modal>
+  <!-- 修改 -->
+  <Modal
+   v-model="modal_update"
+   title="修改演员信息"
+   @on-ok="update()"
+   @on-cancel="cancel"
+  >
+   <Form label-position="left" :label-width="100">
+    <FormItem label="id">
+     <Input v-model="actor.id"></Input>
+    </FormItem>
+    <FormItem label="名称">
+     <Input v-model="actor.name"></Input>
+    </FormItem>
+    <FormItem label="图片">
+     <Input v-model="actor.image"></Input>
+    </FormItem>
+    <FormItem label="简介">
+     <Input v-model="actor.intro"></Input>
+    </FormItem>
+   </Form>
+  </Modal>
  </div>
 </template>
 <script>
@@ -130,25 +132,42 @@ export default {
   //列表查询
   list(pageNo) {
    let _this = this;
-   _this.$ajax
-    .post(process.env.VUE_APP_SERVER + "/business/list", {
-     pageNo: pageNo,
-     pageSize: _this.pageSize,
-    })
-    .then(
-     //响应结果
-     (response) => {
-      if (response.data.success) {
-       console.log("查询演员列表", response);
-       let resp = response.data.data;
-       _this.actors = resp.records;
-       _this.totalRecord = resp.totalRecord;
-       this.$Message.info("获取列表信息ok");
-      } else {
-       this.$Message.error("出错了,告知老王修复");
+   _this.$Spin.show({
+    render: (h) => {
+     return h("div", [
+      h("Icon", {
+       class: "demo-spin-icon-load",
+       props: {
+        type: "ios-loading",
+        size: 18,
+       },
+      }),
+      h("div", "Loading"),
+     ]);
+    },
+   });
+   setTimeout(() => {
+    this.$Spin.hide();
+    _this.$ajax
+     .post(process.env.VUE_APP_SERVER + "/business/list", {
+      pageNo: pageNo,
+      pageSize: _this.pageSize,
+     })
+     .then(
+      //响应结果
+      (response) => {
+       if (response.data.success) {
+        console.log("查询演员列表", response);
+        let resp = response.data.data;
+        _this.actors = resp.records;
+        _this.totalRecord = resp.totalRecord;
+        this.$Message.info("获取列表信息ok");
+       } else {
+        this.$Message.error("出错了,告知老王修复");
+       }
       }
-     }
-    );
+     );
+   }, 1000);
   },
   //页码改变
   handleCurrentChange(page) {
@@ -163,6 +182,8 @@ export default {
   //新增演员
   add() {
    let _this = this;
+
+   this.$Spin.hide();
    _this.$ajax
     .post(process.env.VUE_APP_SERVER + "/business/add", _this.actor)
     .then(
@@ -179,18 +200,59 @@ export default {
      }
     );
   },
-  //打开
+  //打开更新模态框
   toUpdate(actor) {
-    console.log(actor);
    let _this = this;
-   //消除双向绑定，复制对象
-   _this.actor = $.extend({}, actor);
-   console.log
-   _this.modal_update = true;
+   _this.$Spin.show({
+    render: (h) => {
+     return h("div", [
+      h("Icon", {
+       class: "demo-spin-icon-load",
+       props: {
+        type: "ios-loading",
+        size: 18,
+       },
+      }),
+      h("div", "Loading"),
+     ]);
+    },
+   });
+   setTimeout(() => {
+    this.$Spin.hide();
+    console.log(actor);
+    //消除双向绑定，复制对象
+    _this.actor = $.extend({}, actor);
+    _this.modal_update = true;
+   }, 1000);
+  },
+  //打开新增模态框
+  toAdd() {
+   let _this = this;
+   this.$Spin.show({
+    render: (h) => {
+     return h("div", [
+      h("Icon", {
+       class: "demo-spin-icon-load",
+       props: {
+        type: "ios-loading",
+        size: 18,
+       },
+      }),
+      h("div", "Loading"),
+     ]);
+    },
+   });
+   setTimeout(() => {
+    this.$Spin.hide();
+    //消除双向绑定，复制对象
+    _this.actor = {};
+    _this.modal_add = true;
+   }, 1000);
   },
   //修改演员
   update() {
    let _this = this;
+
    _this.$ajax
     .post(process.env.VUE_APP_SERVER + "/business/update", _this.actor)
     .then(
@@ -211,7 +273,7 @@ export default {
   cancel() {
    this.$Message.info("已取消操作");
   },
-  //删除
+  //删除演员
   del(id) {
    this.modal_loading = true;
    setTimeout(() => {
@@ -235,3 +297,8 @@ export default {
  },
 };
 </script>
+<style scope>
+.demo-spin-icon-load {
+ animation: ani-demo-spin 1s linear infinite;
+}
+</style>
