@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import axios from 'axios'
+import filter from './filter/filter'
 
 import router from './router';
 import ViewUI from 'view-design';
@@ -26,6 +27,11 @@ axios.interceptors.response.use(function (response){
   return response;
 },error=>{})// eslint-disable-line no-unused-vars
 
+
+//全局过滤器
+Object.keys(filter).forEach(key =>{
+  Vue.filter(key,filter[key])
+});
 
 new Vue({
   router,

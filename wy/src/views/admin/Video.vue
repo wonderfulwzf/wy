@@ -24,6 +24,7 @@
    </Col>
   </Row>
   <Table border :columns="video_title" :data="videos" style="width: 1100px">
+   {{ VIDEO_CHARGE | optionKV(1) }}>
   </Table>
   <!-- 删除 -->
   <Modal v-model="modal_delete" width="360">
@@ -62,15 +63,21 @@
      <FormItem label="时长">
       <Input type="text" v-model="video.time"></Input>
      </FormItem>
-     <FormItem label="收费">
-      <Input type="text" v-model="video.charge"></Input>
-     </FormItem>
      <FormItem label="顺序">
       <Input type="text" v-model="video.sort"></Input>
      </FormItem>
      <FormItem label="vod">
       <Input type="text" v-model="video.vod"></Input>
      </FormItem>
+     收费
+     <Select style="width: 200px" v-model="video.charge">
+      <Option
+       v-for="item in VIDEO_CHARGE"
+       :value="item.key"
+       :key="item.value"
+       >{{ item.value }}</Option
+      >
+     </Select>
     </Form>
    </div>
    <div slot="footer">
@@ -97,15 +104,21 @@
      <FormItem label="时长">
       <Input type="text" v-model="video.time"></Input>
      </FormItem>
-     <FormItem label="收费">
-      <Input type="text" v-model="video.charge"></Input>
-     </FormItem>
      <FormItem label="顺序">
       <Input type="text" v-model="video.sort"></Input>
      </FormItem>
      <FormItem label="vod">
       <Input type="text" v-model="video.vod"></Input>
      </FormItem>
+     收费
+     <Select style="width: 200px" v-model="video.charge">
+      <Option
+       v-for="item in VIDEO_CHARGE"
+       :value="item.key"
+       :key="item.value"
+       >{{ item.value }}</Option
+      >
+     </Select>
     </Form>
    </div>
    <div slot="footer">
@@ -130,7 +143,9 @@ export default {
    pageNo: 1,
    totalRecord: 0,
    pageSize: 3,
-   video: {}, //视频
+   video: {
+    charge: 0,
+   }, //视频
    deleteID: 0,
    //表格头部信息
    video_title: [
@@ -149,6 +164,16 @@ export default {
     {
      title: "收费",
      key: "charge",
+     render: (h, params) => {
+      // 根据条件判断内容重写
+      console.log(params.row.charge);
+      switch (params.row.charge) {
+       case 0:
+        return h("span", "免费");
+       case 1:
+        return h("span", "收费");
+      }
+     },
     },
     {
      title: "操作",
@@ -214,6 +239,8 @@ export default {
      },
     },
    ],
+   //枚举
+   VIDEO_CHARGE: VIDEO_CHARGE,
   };
  },
  mounted: function () {
@@ -275,7 +302,7 @@ export default {
   add() {
    let _this = this;
    _this.$Spin.hide();
-   _this.video.summaryId=111111111111111;
+   _this.video.summaryId = 111111111111111;
    _this.$ajax
     .post(process.env.VUE_APP_SERVER + "/business/video/add", _this.video)
     .then(
