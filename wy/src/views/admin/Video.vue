@@ -1,6 +1,15 @@
 <template>
  <div>
+  <h1>{{ summary.name }}</h1>
+
   <Row style="margin-bottom: 30px">
+   <Col span="2">
+    <router-link to="/summary">
+     <Button type="primary"
+      ><Icon type="md-arrow-round-back" />返回</Button
+     ></router-link
+    ></Col
+   >
    <Col span="2"
     ><Button type="primary" @click="list(1)"
      ><Icon type="ios-refresh" />刷新</Button
@@ -24,7 +33,6 @@
    </Col>
   </Row>
   <Table border :columns="video_title" :data="videos" style="width: 1100px">
-   {{ VIDEO_CHARGE | optionKV(1) }}>
   </Table>
   <!-- 删除 -->
   <Modal v-model="modal_delete" width="360">
@@ -240,10 +248,18 @@ export default {
    ],
    //枚举
    VIDEO_CHARGE: VIDEO_CHARGE,
+   //视频概览
+   summary: {},
   };
  },
  mounted: function () {
   let _this = this;
+  //获取缓存中的视频概览
+  let summary = SessionStorage.get("summary") || {};
+  if (Tool.isEmpty(summary)) {
+   _this.$router.push("/login");
+  }
+  _this.summary = summary;
   _this.list(1);
  },
  methods: {
@@ -265,11 +281,12 @@ export default {
     },
    });
    setTimeout(() => {
-    this.$Spin.hide();
+    _this.$Spin.hide();
     _this.$ajax
      .post(process.env.VUE_APP_SERVER + "/business/video/list", {
       pageNo: pageNo,
       pageSize: _this.pageSize,
+      summaryId: _this.summary.id,
      })
      .then(
       //响应结果
@@ -301,7 +318,7 @@ export default {
   add() {
    let _this = this;
    _this.$Spin.hide();
-   _this.video.summaryId = 111111111111111;
+   _this.video.summaryId = _this.summary.id;
    _this.$ajax
     .post(process.env.VUE_APP_SERVER + "/business/video/add", _this.video)
     .then(

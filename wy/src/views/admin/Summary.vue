@@ -65,7 +65,7 @@
         type="primary"
         style="margin: 3px"
         size="small"
-        @click="modal_delete = true"
+        @click="toVideo(summary)"
         ><Icon type="md-arrow-round-forward" />去视频</Button
        >
       </div>
@@ -414,6 +414,13 @@ export default {
       }
      );
    }, 500);
+  },
+  //点击去视频跳到对于视频
+  toVideo(summary){
+    let _this = this;
+    //缓存视频概览信息
+    SessionStorage.set("summary",summary);
+    _this.$router.push("/video");
   },
  },
 };
