@@ -39,16 +39,14 @@
            icon="ios-person"
            src="https://i.gtimg.cn/qqlive/images/namelib/v688/7/5/3/72753.jpg" /></router-link
         ></Col>
-        <Col span="6"
-         ><h4>时长:{{ summary.time }}</h4></Col
+        <Col span="12"
+         ><Icon type="md-flame" color="red" />热度:{{ summary.heat }}</Col
         >
-        <Col span="6"
-         ><Icon type="md-flame" color="red" />{{ summary.heat }}</Col
-        >
-        <Col span="3" v-show="summary.flag === 1"
+        <Col span="6" v-show="summary.flag === 1"
          ><img src="../../../public/static/img/vip.png"
         /></Col>
        </Row>
+       <h4>时长:{{ summary.time | formatSecond }}</h4>
        <Button
         type="warning"
         @click="toUpdate(summary)"
@@ -161,26 +159,26 @@
     <Button type="primary" @click="update">修改</Button>
    </div>
   </Modal>
-   <!-- 删除 -->
-       <Modal v-model="modal_delete" width="360">
-        <p slot="header" style="color: #f60; text-align: center">
-         <Icon type="ios-information-circle"></Icon>
-         <span>确定删除?</span>
-        </p>
-        <div style="text-align: center">
-         <p>删除此视频概览信息将不可恢复！</p>
-        </div>
-        <div slot="footer">
-         <Button
-          type="error"
-          size="large"
-          long
-          :loading="modal_loading"
-          @click="del(deleteId)"
-          >我仍要删除！</Button
-         >
-        </div>
-       </Modal>
+  <!-- 删除 -->
+  <Modal v-model="modal_delete" width="360">
+   <p slot="header" style="color: #f60; text-align: center">
+    <Icon type="ios-information-circle"></Icon>
+    <span>确定删除?</span>
+   </p>
+   <div style="text-align: center">
+    <p>删除此视频概览信息将不可恢复！</p>
+   </div>
+   <div slot="footer">
+    <Button
+     type="error"
+     size="large"
+     long
+     :loading="modal_loading"
+     @click="del(deleteId)"
+     >我仍要删除！</Button
+    >
+   </div>
+  </Modal>
  </div>
 </template>
 <script>
@@ -203,7 +201,7 @@ export default {
    //vip枚举
    SUMMARY_FLAG: SUMMARY_FLAG,
    //删除id
-   deleteId:0,
+   deleteId: 0,
   };
  },
  mounted: function () {
@@ -265,12 +263,11 @@ export default {
   add() {
    let _this = this;
    //保存校验
-   if (
-    !Validator.require(_this.summary.name, "名称")) {
-       _this.$Notice.error({
-        title: '校验错误',
-        desc: "名称不能为空"
-      });
+   if (!Validator.require(_this.summary.name, "名称")) {
+    _this.$Notice.error({
+     title: "校验错误",
+     desc: "名称不能为空",
+    });
     return;
    }
    _this.$Spin.hide();
