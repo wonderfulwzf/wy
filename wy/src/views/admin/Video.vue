@@ -166,7 +166,6 @@ export default {
      key: "charge",
      render: (h, params) => {
       // 根据条件判断内容重写
-      console.log(params.row.charge);
       switch (params.row.charge) {
        case 0:
         return h("span", "免费");

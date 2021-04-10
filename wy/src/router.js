@@ -6,6 +6,7 @@ import Welcome from "./views/admin/Welcome.vue"
 import User from "./views/admin/User.vue"
 import Video from "./views/admin/Video.vue"
 import Actor from "./views/admin/Actor.vue"
+import Summary from "./views/admin/Summary.vue"
 
 Vue.use(Router);
 
@@ -34,6 +35,10 @@ export default new Router({
             name: "actor",
             path: "actor",
             component: Actor,
+        },{
+            name: "summary",
+            path: "summary",
+            component: Summary,
         }]
     }, {
         path: "/login",

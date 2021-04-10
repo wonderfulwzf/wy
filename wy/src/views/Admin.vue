@@ -66,6 +66,7 @@
           <Icon type="ios-keypad"></Icon>
           业务管理
          </template>
+          <MenuItem name="summary" to="/summary">视频概览</MenuItem>
          <MenuItem name="video" to="/video">视频管理</MenuItem>
          <MenuItem name="actor" to="/actor">演员管理</MenuItem>
          <MenuItem name="3-2">会员管理</MenuItem>
