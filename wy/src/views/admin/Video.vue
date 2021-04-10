@@ -23,86 +23,94 @@
     />
    </Col>
   </Row>
-  <Row :gutter="16" style="height: 650px">
-   <Col span="6" v-for="video in videos" v-bind:key="video.id">
-    <div>
-     <Card style="width: 220px">
-      <div style="text-align: center">
-       <div class="demo-avatar">
-        <Avatar
-         icon="ios-person"
-         :src="video.video"
-         style="width: 90px; height: 90px"
-        />
-       </div>
-       <h3>{{ video.title }}</h3>
-       <p>{{ video.time }}</p>
-       <Button type="warning" @click="toUpdate(video)" style="margin: 3px"
-        ><Icon type="md-brush" />修改</Button
-       >
-       <Button type="error" style="margin: 3px" @click="modal_delete = true"
-        ><Icon type="md-close" />删除</Button
-       >
-       <!-- 删除 -->
-       <Modal v-model="modal_delete" width="360">
-        <p slot="header" style="color: #f60; text-align: center">
-         <Icon type="ios-information-circle"></Icon>
-         <span>确定删除?</span>
-        </p>
-        <div style="text-align: center">
-         <p>删除此视频信息将不可恢复！</p>
-        </div>
-        <div slot="footer">
-         <Button
-          type="error"
-          size="large"
-          long
-          :loading="modal_loading"
-          @click="del(video.id)"
-          >我仍要删除！</Button
-         >
-        </div>
-       </Modal>
-      </div>
-     </Card>
-    </div>
-   </Col>
-  </Row>
-  <!-- 添加 -->
-  <Modal v-model="modal_add" title="新增视频" @on-ok="add" @on-cancel="cancel">
-   <Form label-position="left" :label-width="100">
-    <FormItem label="名称">
-     <Input v-model="video.title"></Input>
-    </FormItem>
-    <FormItem label="图片">
-     <Input v-model="video.video"></Input>
-    </FormItem>
-    <FormItem label="简介">
-     <Input v-model="video.time"></Input>
-    </FormItem>
-   </Form>
+  <Table border :columns="video_title" :data="videos" style="width: 1100px">
+  </Table>
+  <!-- 删除 -->
+  <Modal v-model="modal_delete" width="360">
+   <p slot="header" style="color: #f60; text-align: center">
+    <Icon type="ios-information-circle"></Icon>
+    <span>确定删除?</span>
+   </p>
+   <div style="text-align: center">
+    <p>删除此视频信息将不可恢复！</p>
+   </div>
+   <div slot="footer">
+    <Button
+     type="error"
+     size="large"
+     long
+     :loading="modal_loading"
+     @click="del(deleteID)"
+     >我仍要删除！</Button
+    >
+   </div>
+  </Modal>
+  <!-- 新增 -->
+  <Modal v-model="modal_add" width="360" @on-cancel="cancel">
+   <p slot="header" style="color: #2b85e4; text-align: center">
+    <Icon type="md-videocam" />
+    <span>新增视频</span>
+   </p>
+   <div style="text-align: center">
+    <Form :label-width="80">
+     <FormItem label="标题">
+      <Input type="text" v-model="video.title"></Input>
+     </FormItem>
+     <FormItem label="视频地址">
+      <Input type="text" v-model="video.video"></Input>
+     </FormItem>
+     <FormItem label="时长">
+      <Input type="text" v-model="video.time"></Input>
+     </FormItem>
+     <FormItem label="收费">
+      <Input type="text" v-model="video.charge"></Input>
+     </FormItem>
+     <FormItem label="顺序">
+      <Input type="text" v-model="video.sort"></Input>
+     </FormItem>
+     <FormItem label="vod">
+      <Input type="text" v-model="video.vod"></Input>
+     </FormItem>
+    </Form>
+   </div>
+   <div slot="footer">
+    <Button type="primary" @click="add">新增</Button>
+   </div>
   </Modal>
   <!-- 修改 -->
-  <Modal
-   v-model="modal_update"
-   title="修改视频信息"
-   @on-ok="update()"
-   @on-cancel="cancel"
-  >
-   <Form label-position="left" :label-width="100">
-    <FormItem label="id">
-     <Input v-model="video.id" disabled></Input>
-    </FormItem>
-    <FormItem label="名称">
-     <Input v-model="video.time"></Input>
-    </FormItem>
-    <FormItem label="图片">
-     <Input v-model="video.video"></Input>
-    </FormItem>
-    <FormItem label="简介">
-     <Input v-model="video.title"></Input>
-    </FormItem>
-   </Form>
+  <Modal v-model="modal_update" width="360" @on-cancel="cancel">
+   <p slot="header" style="color: #2b85e4; text-align: center">
+    <Icon type="md-videocam" />
+    <span>修改视频</span>
+   </p>
+   <div style="text-align: center">
+    <Form :label-width="80">
+     <FormItem label="ID">
+      <Input type="text" v-model="video.id" disabled></Input>
+     </FormItem>
+     <FormItem label="标题">
+      <Input type="text" v-model="video.title"></Input>
+     </FormItem>
+     <FormItem label="视频地址">
+      <Input type="text" v-model="video.video"></Input>
+     </FormItem>
+     <FormItem label="时长">
+      <Input type="text" v-model="video.time"></Input>
+     </FormItem>
+     <FormItem label="收费">
+      <Input type="text" v-model="video.charge"></Input>
+     </FormItem>
+     <FormItem label="顺序">
+      <Input type="text" v-model="video.sort"></Input>
+     </FormItem>
+     <FormItem label="vod">
+      <Input type="text" v-model="video.vod"></Input>
+     </FormItem>
+    </Form>
+   </div>
+   <div slot="footer">
+    <Button type="primary" @click="update">确定修改</Button>
+   </div>
   </Modal>
  </div>
 </template>
@@ -123,6 +131,89 @@ export default {
    totalRecord: 0,
    pageSize: 3,
    video: {}, //视频
+   deleteID: 0,
+   //表格头部信息
+   video_title: [
+    {
+     title: "ID",
+     key: "id",
+    },
+    {
+     title: "标题",
+     key: "title",
+    },
+    {
+     title: "时长",
+     key: "time",
+    },
+    {
+     title: "收费",
+     key: "charge",
+    },
+    {
+     title: "操作",
+     key: "dosome",
+     width: 250,
+     align: "center",
+     render: (h, params) => {
+      return h("div", [
+       h(
+        "Button",
+        {
+         props: {
+          type: "warning",
+          size: "small",
+         },
+         style: {
+          marginRight: "5px",
+         },
+         on: {
+          click: () => {
+           let _this = this;
+           _this.video = params.row;
+           _this.modal_update = true;
+          },
+         },
+        },
+        "修改"
+       ),
+       h(
+        "Button",
+        {
+         props: {
+          type: "error",
+          size: "small",
+         },
+         style: {
+          marginRight: "5px",
+         },
+         on: {
+          click: () => {
+           let _this = this;
+           _this.deleteID = params.row.id;
+           _this.modal_delete = true;
+          },
+         },
+        },
+        "删除"
+       ),
+       h(
+        "Button",
+        {
+         props: {
+          type: "info",
+          size: "small",
+         },
+         on: {
+          click: () => {},
+         },
+        },
+        "播放"
+       ),
+      ]);
+     },
+    },
+   ],
   };
  },
  mounted: function () {
@@ -184,6 +275,7 @@ export default {
   add() {
    let _this = this;
    _this.$Spin.hide();
+   _this.video.summaryId=111111111111111;
    _this.$ajax
     .post(process.env.VUE_APP_SERVER + "/business/video/add", _this.video)
     .then(
@@ -194,6 +286,7 @@ export default {
        _this.list(1);
        _this.$Message.info("新增视频ok");
        _this.video = {};
+       _this.modal_add = false;
       } else {
        _this.$Notice.error({
         title: response.data.message,
@@ -255,7 +348,6 @@ export default {
   //修改视频
   update() {
    let _this = this;
-
    _this.$ajax
     .post(process.env.VUE_APP_SERVER + "/business/video/update", _this.video)
     .then(
@@ -265,6 +357,7 @@ export default {
        console.log("修改视频信息", response);
        _this.list(1);
        _this.$Message.info("修改视频ok");
+       _this.modal_update = false;
        _this.video = {};
       } else {
        _this.$Message.error("出错了,告知老王修复");
@@ -278,23 +371,26 @@ export default {
   },
   //删除视频
   del(id) {
+   console.log(id);
    this.modal_loading = true;
    setTimeout(() => {
     let _this = this;
-    _this.$ajax.get(process.env.VUE_APP_SERVER + "/business/video/delete/" + id).then(
-     //响应结果
-     (response) => {
-      this.modal_loading = false;
-      this.modal_delete = false;
-      if (response.data.success) {
-       console.log("删除视频信息", response);
-       _this.list(1);
-       this.$Message.info("删除视频ok");
-      } else {
-       this.$Message.error("出错了,告知老王修复");
+    _this.$ajax
+     .get(process.env.VUE_APP_SERVER + "/business/video/delete/" + id)
+     .then(
+      //响应结果
+      (response) => {
+       this.modal_loading = false;
+       this.modal_delete = false;
+       if (response.data.success) {
+        console.log("删除视频信息", response);
+        _this.list(1);
+        this.$Message.info("删除视频ok");
+       } else {
+        this.$Message.error("出错了,告知老王修复");
+       }
       }
-     }
-    );
+     );
    }, 500);
   },
  },
