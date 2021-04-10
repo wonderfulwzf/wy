@@ -150,7 +150,7 @@ export default {
    setTimeout(() => {
     this.$Spin.hide();
     _this.$ajax
-     .post(process.env.VUE_APP_SERVER + "/business/list", {
+     .post(process.env.VUE_APP_SERVER + "/business/actor/list", {
       pageNo: pageNo,
       pageSize: _this.pageSize,
      })
@@ -185,7 +185,7 @@ export default {
    let _this = this;
    _this.$Spin.hide();
    _this.$ajax
-    .post(process.env.VUE_APP_SERVER + "/business/add", _this.actor)
+    .post(process.env.VUE_APP_SERVER + "/business/actor/add", _this.actor)
     .then(
      //响应结果
      (response) => {
@@ -257,7 +257,7 @@ export default {
    let _this = this;
 
    _this.$ajax
-    .post(process.env.VUE_APP_SERVER + "/business/update", _this.actor)
+    .post(process.env.VUE_APP_SERVER + "/business/actor/update", _this.actor)
     .then(
      //响应结果
      (response) => {
@@ -281,7 +281,7 @@ export default {
    this.modal_loading = true;
    setTimeout(() => {
     let _this = this;
-    _this.$ajax.get(process.env.VUE_APP_SERVER + "/business/delete/" + id).then(
+    _this.$ajax.get(process.env.VUE_APP_SERVER + "/business/actor/delete/" + id).then(
      //响应结果
      (response) => {
       this.modal_loading = false;
