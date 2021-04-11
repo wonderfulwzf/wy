@@ -33,12 +33,14 @@
        </div>
        <!-- <h3>{{ summary.name }}</h3> -->
        <Row type="flex" justify="center" align="middle">
-        <Col span="6"
-         ><router-link to="/actor"
+        <Col span="6" v-for="actor in actors.filter((t) => {
+        return t.id === summary.actorId;
+         })" v-bind:key="actor.id">
+         <router-link to="/actor"
           ><Avatar
            icon="ios-person"
-           src="https://i.gtimg.cn/qqlive/images/namelib/v688/7/5/3/72753.jpg" /></router-link
-        ></Col>
+           :src="actor.image" /></router-link>
+        </Col>
         <Col span="12"
          ><Icon type="md-flame" color="red" />热度:{{ summary.heat }}</Col
         >
@@ -274,6 +276,8 @@ export default {
    checknodes: [],
    //所有演员
    actors: [],
+   //单个演员
+   actor:{},
    //选择的演员
    selectActors: [],
   };
