@@ -100,15 +100,26 @@
      <FormItem label="主演id">
       <Input type="text" v-model="summary.actorId"></Input>
      </FormItem>
-     等级
-     <Select style="width: 200px" v-model="summary.flag">
-      <Option
-       v-for="item in SUMMARY_FLAG"
-       :value="item.key"
-       :key="item.value"
-       >{{ item.value }}</Option
-      >
-     </Select>
+     <FormItem label="等级">
+      <Select style="width: 200px" v-model="summary.flag">
+       <Option
+        v-for="item in SUMMARY_FLAG"
+        :value="item.key"
+        :key="item.value"
+        >{{ item.value }}</Option
+       >
+      </Select>
+     </FormItem>
+     <FormItem label="分类">
+      <Select style="width: 250px">
+       <Tree
+        :data="treeData"
+        show-checkbox
+        :render="renderContent"
+        @on-check-change="selectnode"
+       ></Tree>
+      </Select>
+     </FormItem>
     </Form>
    </div>
    <div slot="footer">
@@ -202,11 +213,51 @@ export default {
    SUMMARY_FLAG: SUMMARY_FLAG,
    //删除id
    deleteId: 0,
+   //分类树
+   data2: [
+    {
+     title: "parent 1",
+     expand: true,
+     children: [
+      {
+       title: "parent 1-1",
+       expand: true,
+       children: [
+        {
+         title: "leaf 1-1-1",
+        },
+        {
+         title: "leaf 1-1-2",
+        },
+       ],
+      },
+      {
+       title: "parent 1-2",
+       expand: true,
+       children: [
+        {
+         title: "leaf 1-2-1",
+        },
+        {
+         title: "leaf 1-2-1",
+        },
+       ],
+      },
+     ],
+    },
+   ],
+   //所有分类
+   categorys: [],
+   treeData: [],
+   //选择的分类数组
+   checknodes: [],
   };
  },
  mounted: function () {
   let _this = this;
   _this.list(1);
+  //查询所有分类
+  _this.getAllCategory();
  },
  methods: {
   //列表查询
@@ -318,6 +369,7 @@ export default {
   //打开更新模态框
   toUpdate(summary) {
    let _this = this;
+   _checknodes = [];
    _this.$Spin.show({
     render: (h) => {
      return h("div", [
@@ -343,6 +395,7 @@ export default {
   //打开新增模态框
   toAdd() {
    let _this = this;
+   _this.checknodes = [];
    _this.$Spin.show({
     render: (h) => {
      return h("div", [
@@ -415,12 +468,66 @@ export default {
      );
    }, 500);
   },
-  //点击去视频跳到对于视频
-  toVideo(summary){
-    let _this = this;
-    //缓存视频概览信息
-    SessionStorage.set("summary",summary);
-    _this.$router.push("/video");
+  //点击去视频跳到对应视频
+  toVideo(summary) {
+   let _this = this;
+   //缓存视频概览信息
+   SessionStorage.set("summary", summary);
+   _this.$router.push("/video");
+  },
+  //查询所有分类
+  getAllCategory() {
+   let _this = this;
+   _this.$ajax.get(process.env.VUE_APP_SERVER + "/business/category/all").then(
+    //响应结果
+    (response) => {
+     if (response.data.success) {
+      console.log("查询种类列表", response);
+      let resp = response.data.data;
+      _this.categorys = resp;
+      console.log(_this.categorys);
+      _this.$Message.info("获取列表信息ok");
+      // 将所有记录格式化成树形结构
+      _this.treeData = [];
+      for (let i = 0; i < _this.categorys.length; i++) {
+       let c = _this.categorys[i];
+       if (c.parent === "00000000") {
+        _this.treeData.push(c);
+        for (let j = 0; j < _this.categorys.length; j++) {
+         let child = _this.categorys[j];
+         if (child.parent === c.id) {
+          if (Tool.isEmpty(c.children)) {
+           c.children = [];
+          }
+          c.children.push(child);
+         }
+        }
+       }
+      }
+     } else {
+      this.$Message.error("出错了,告知老王修复");
+     }
+    }
+   );
+  },
+  // renderContent: (h, { root, node, data }) => {
+  //  console.log(root);
+  //  console.log(node);
+  //  return h("span", [h("span", data.name)]);
+  // },
+  renderContent: (h, { data }) => {
+   return h("span", [h("span", data.name)]);
+  },
+  selectnode(children) {
+   let _this = this;
+   _this.checknodes = [];
+   if (children!=[]) {
+     children.forEach((node) => {
+     _this.checknodes.push(node.id);
+    });
+   }
+   console.log(_this.checknodes);
+   console.log(children);
   },
  },
 };

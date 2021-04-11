@@ -231,10 +231,7 @@ export default {
        _this.categorys = resp;
        console.log(_this.categorys);
        _this.$Message.info("获取列表信息ok");
-       _this.categoryss = response.data.data;
-
        _this.level1 = [];
-
        for (let i = 0; i < _this.categorys.length; i++) {
         let c = _this.categorys[i];
         if (c.parent === "00000000") {
