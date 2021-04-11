@@ -5,7 +5,7 @@
     <Menu mode="horizontal" theme="dark" active-name="1">
      <Row>
       <Col span="3">
-       <div><h1 style="color:#ff9900;">往&nbsp;忆&nbsp;视&nbsp;频</h1></div>
+       <div><h1 style="color: #ff9900">往&nbsp;忆&nbsp;视&nbsp;频</h1></div>
       </Col>
       <Col span="9">
        <div>col-6</div>
@@ -17,13 +17,16 @@
       <Col span="2">
        <Dropdown>
         <div>
-         <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" size="large" />
+         <Avatar
+          src="https://i.loli.net/2017/08/21/599a521472424.jpg"
+          size="large"
+         />
          <a href="javascript:void(0)"> </a>
         </div>
         <DropdownMenu slot="list">
          <DropdownItem>设置</DropdownItem>
          <DropdownItem>用户信息</DropdownItem>
-          <DropdownItem>退出登录</DropdownItem>
+         <DropdownItem>退出登录</DropdownItem>
         </DropdownMenu>
        </Dropdown>
       </Col>
@@ -36,7 +39,7 @@
       <BreadcrumbItem to="/">
        <Icon type="ios-home-outline"></Icon> 首页
       </BreadcrumbItem>
-        <BreadcrumbItem to="/components/breadcrumb">
+      <BreadcrumbItem to="/components/breadcrumb">
        <Icon type="ios-cafe"></Icon> 欢迎页
       </BreadcrumbItem>
       <BreadcrumbItem to="/components/breadcrumb">
@@ -49,9 +52,16 @@
     >
      <Layout>
       <Sider hide-trigger :style="{ background: '#fff' }">
-       <Menu  theme="light" width="auto"  accordion  v-bind:active-name=business :open-names="['system','business','file']">
-         <MenuItem name="welcome" to="/welcome"><Icon type="logo-youtube" />
-         欢迎</MenuItem>
+       <Menu
+        theme="light"
+        width="auto"
+        accordion
+        v-bind:active-name="business"
+        :open-names="['system', 'business', 'file']"
+       >
+        <MenuItem name="welcome" to="/welcome"
+         ><Icon type="logo-youtube" /> 欢迎</MenuItem
+        >
         <Submenu name="system">
          <template slot="title">
           <Icon type="ios-people" />
@@ -60,16 +70,17 @@
          <MenuItem name="user" to="/user">用户管理</MenuItem>
          <MenuItem name="member">角色管理</MenuItem>
          <MenuItem name="resource">资源管理</MenuItem>
+         <MenuItem name="member">会员管理</MenuItem>
         </Submenu>
         <Submenu name="business">
          <template slot="title">
           <Icon type="ios-keypad"></Icon>
           业务管理
          </template>
-          <MenuItem name="summary" to="/summary">视频概览</MenuItem>
+         <MenuItem name="summary" to="/summary">视频概览</MenuItem>
          <MenuItem name="video" to="/video">视频管理</MenuItem>
+         <MenuItem name="category" to="/category">种类管理</MenuItem>
          <MenuItem name="actor" to="/actor">演员管理</MenuItem>
-         <MenuItem name="3-2">会员管理</MenuItem>
         </Submenu>
         <Submenu name="file">
          <template slot="title">
@@ -83,13 +94,14 @@
       <Content
        :style="{ padding: '24px', minHeight: '280px', background: '#fff' }"
       >
-      <div><router-view /></div>
-      
+       <div><router-view /></div>
       </Content>
      </Layout>
     </Content>
    </Layout>
-   <Footer class="layout-footer-center">2020-2021 &copy; create By:王智芳</Footer>
+   <Footer class="layout-footer-center"
+    >2020-2021 &copy; create By:王智芳</Footer
+   >
   </Layout>
  </div>
 </template>
@@ -98,15 +110,14 @@ export default {
  name: "admin",
  data: function () {
   return {
-    business:"",
+   business: "",
   };
  },
  mounted: function () {
-   let _this = this;
-   _this.business = _this.$route.name;
+  let _this = this;
+  _this.business = _this.$route.name;
  },
- methods: {
- },
+ methods: {},
 };
 </script>
 <style scoped>

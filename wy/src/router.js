@@ -7,6 +7,7 @@ import User from "./views/admin/User.vue"
 import Video from "./views/admin/Video.vue"
 import Actor from "./views/admin/Actor.vue"
 import Summary from "./views/admin/Summary.vue"
+import Category from "./views/admin/Category.vue"
 
 Vue.use(Router);
 
@@ -39,6 +40,10 @@ export default new Router({
             name: "summary",
             path: "summary",
             component: Summary,
+        },{
+            name: "category",
+            path: "category",
+            component: Category,
         }]
     }, {
         path: "/login",

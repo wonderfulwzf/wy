@@ -84,5 +84,4 @@ Tool = {
       }
       return index;
     },
-
 };
