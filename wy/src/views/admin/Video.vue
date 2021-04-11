@@ -170,6 +170,10 @@ export default {
      key: "time",
     },
     {
+     title: "顺序",
+     key: "sort",
+    },
+    {
      title: "收费",
      key: "charge",
      render: (h, params) => {
@@ -255,7 +259,7 @@ export default {
  mounted: function () {
   let _this = this;
   //获取缓存中的视频概览
-  let summary = SessionStorage.get("summary") || {};
+  let summary = SessionStorage.get(SESSION_SUMMARY) || {};
   if (Tool.isEmpty(summary)) {
    _this.$router.push("/login");
   }

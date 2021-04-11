@@ -97,9 +97,13 @@
      <FormItem label="热度">
       <Input type="text" v-model="summary.heat"></Input>
      </FormItem>
-     <FormItem label="主演id">
-      <Input type="text" v-model="summary.actorId"></Input>
-     </FormItem>
+     <FormItem label="主演">
+      <Select v-model="summary.actorId" style="width: 200px">
+       <Option v-for="item in actors" :value="item.id" :key="item.id">{{
+        item.name
+       }}</Option>
+      </Select> </FormItem
+     >
      <FormItem label="等级">
       <Select style="width: 200px" v-model="summary.flag">
        <Option
@@ -152,9 +156,6 @@
      <FormItem label="热度">
       <Input type="text" v-model="summary.heat"></Input>
      </FormItem>
-     <FormItem label="主演id">
-      <Input type="text" v-model="summary.actorId"></Input>
-     </FormItem>
      <FormItem label="等级">
       <Select style="width: 200px" v-model="summary.flag">
        <Option
@@ -163,6 +164,13 @@
         :key="item.value"
         >{{ item.value }}</Option
        >
+      </Select>
+     </FormItem>
+     <FormItem label="主演">
+      <Select v-model="summary.actorId" style="width: 200px">
+       <Option v-for="item in actors" :value="item.id" :key="item.id">{{
+        item.name
+       }}</Option>
       </Select>
      </FormItem>
      <FormItem label="分类">
@@ -219,7 +227,9 @@ export default {
    pageNo: 1,
    totalRecord: 0,
    pageSize: 3,
-   summary: {}, //视频概览
+   summary: {
+    actorId: "",
+   }, //视频概览
    //vip枚举
    SUMMARY_FLAG: SUMMARY_FLAG,
    //删除id
@@ -262,6 +272,10 @@ export default {
    treeData: [],
    //选择的分类数组
    checknodes: [],
+   //所有演员
+   actors: [],
+   //选择的演员
+   selectActors: [],
   };
  },
  mounted: function () {
@@ -269,6 +283,8 @@ export default {
   _this.list(1);
   //查询所有分类
   _this.getAllCategory();
+  //查询所有演员
+  _this.getAllActors();
  },
  methods: {
   //列表查询
@@ -411,7 +427,7 @@ export default {
     //消除双向绑定，复制对象
     _this.summary = $.extend({}, summary);
     _this.modal_update = true;
-   }, 500);
+   }, 300);
   },
   //打开新增模态框
   toAdd() {
@@ -441,6 +457,7 @@ export default {
   //修改视频概览
   update() {
    let _this = this;
+   console.log(_this.summary);
    //种类校验
    if (_this.checknodes.length === 0) {
     _this.$Notice.error({
@@ -503,7 +520,7 @@ export default {
   toVideo(summary) {
    let _this = this;
    //缓存视频概览信息
-   SessionStorage.set("summary", summary);
+   SessionStorage.set(SESSION_SUMMARY, summary);
    _this.$router.push("/video");
   },
   //查询所有分类
@@ -546,9 +563,11 @@ export default {
   //  console.log(node);
   //  return h("span", [h("span", data.name)]);
   // },
+  //渲染选择树
   renderContent: (h, { data }) => {
    return h("span", [h("span", data.name)]);
   },
+  //获取选择的节点
   selectnode(children) {
    let _this = this;
    _this.checknodes = [];
@@ -559,6 +578,23 @@ export default {
    }
    console.log(_this.checknodes);
    console.log(children);
+  },
+  //获取所有演员
+  getAllActors() {
+   let _this = this;
+   _this.$ajax.get(process.env.VUE_APP_SERVER + "/business/actor/all").then(
+    //响应结果
+    (response) => {
+     if (response.data.success) {
+      console.log("查询所有演员", response);
+      let resp = response.data.data;
+      _this.actors = resp;
+      this.$Message.info("查询所有演员");
+     } else {
+      this.$Message.error("出错了,告知老王修复");
+     }
+    }
+   );
   },
  },
 };

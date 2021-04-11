@@ -1,3 +1,5 @@
+//视频概览信息
+SESSION_SUMMARY = "SESSION_SUMMARY";
 SessionStorage = {
     get: function (key) {
         let v = sessionStorage.getItem(key);
