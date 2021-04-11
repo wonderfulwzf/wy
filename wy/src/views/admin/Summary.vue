@@ -155,15 +155,26 @@
      <FormItem label="主演id">
       <Input type="text" v-model="summary.actorId"></Input>
      </FormItem>
-     等级
-     <Select style="width: 200px" v-model="summary.flag">
-      <Option
-       v-for="item in SUMMARY_FLAG"
-       :value="item.key"
-       :key="item.value"
-       >{{ item.value }}</Option
-      >
-     </Select>
+     <FormItem label="等级">
+      <Select style="width: 200px" v-model="summary.flag">
+       <Option
+        v-for="item in SUMMARY_FLAG"
+        :value="item.key"
+        :key="item.value"
+        >{{ item.value }}</Option
+       >
+      </Select>
+     </FormItem>
+     <FormItem label="分类">
+      <Select style="width: 250px">
+       <Tree
+        :data="treeData"
+        show-checkbox
+        :render="renderContent"
+        @on-check-change="selectnode"
+       ></Tree>
+      </Select>
+     </FormItem>
     </Form>
    </div>
    <div slot="footer">
@@ -313,6 +324,14 @@ export default {
   //新增视频概览
   add() {
    let _this = this;
+   //种类校验
+   if (_this.checknodes.length === 0) {
+    _this.$Notice.error({
+     title: "分类错误",
+     desc: "分类不能为空",
+    });
+    return;
+   }
    //保存校验
    if (!Validator.require(_this.summary.name, "名称")) {
     _this.$Notice.error({
@@ -321,6 +340,8 @@ export default {
     });
     return;
    }
+   //分类赋值
+   _this.summary.ids = _this.checknodes;
    _this.$Spin.hide();
    _this.$ajax
     .post(process.env.VUE_APP_SERVER + "/business/summary/add", _this.summary)
@@ -369,7 +390,7 @@ export default {
   //打开更新模态框
   toUpdate(summary) {
    let _this = this;
-   _checknodes = [];
+   _this.checknodes = [];
    _this.$Spin.show({
     render: (h) => {
      return h("div", [
@@ -420,6 +441,16 @@ export default {
   //修改视频概览
   update() {
    let _this = this;
+   //种类校验
+   if (_this.checknodes.length === 0) {
+    _this.$Notice.error({
+     title: "分类错误",
+     desc: "分类不能为空",
+    });
+    return;
+   }
+   //分类赋值
+   _this.summary.ids = _this.checknodes;
    _this.$ajax
     .post(
      process.env.VUE_APP_SERVER + "/business/summary/update",
@@ -521,8 +552,8 @@ export default {
   selectnode(children) {
    let _this = this;
    _this.checknodes = [];
-   if (children!=[]) {
-     children.forEach((node) => {
+   if (children != []) {
+    children.forEach((node) => {
      _this.checknodes.push(node.id);
     });
    }
