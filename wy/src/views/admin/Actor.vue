@@ -91,7 +91,7 @@
      </Upload>
     </FormItem>
     <FormItem label="图片" v-show="actor.image">
-     <img v-bind:src="actor.image" style="width:253px;height:253px" />
+        <img v-bind:src="actor.image" style="width:253px;height:253px" />
     </FormItem>
    </Form>
   </Modal>
@@ -279,6 +279,9 @@ export default {
     _this.$Spin.hide();
     //消除双向绑定，复制对象
     _this.actor = {};
+    _this.actor = {
+     image:"",
+    };
     _this.modal_add = true;
    }, 500);
   },

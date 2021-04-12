@@ -8,6 +8,7 @@ import Video from "./views/admin/Video.vue"
 import Actor from "./views/admin/Actor.vue"
 import Summary from "./views/admin/Summary.vue"
 import Category from "./views/admin/Category.vue"
+import File from "./views/admin/File.vue"
 
 Vue.use(Router);
 
@@ -44,6 +45,10 @@ export default new Router({
             name: "category",
             path: "category",
             component: Category,
+        },{
+            name: "file",
+            path: "file",
+            component: File,
         }]
     }, {
         path: "/login",

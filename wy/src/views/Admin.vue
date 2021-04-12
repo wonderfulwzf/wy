@@ -87,7 +87,7 @@
           <Icon type="ios-analytics"></Icon>
           文件管理
          </template>
-         <MenuItem name="3-1">文件管理</MenuItem>
+         <MenuItem name="file" to="/file">文件管理</MenuItem>
         </Submenu>
        </Menu>
       </Sider>
