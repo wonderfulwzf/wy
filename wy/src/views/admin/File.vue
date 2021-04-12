@@ -24,8 +24,10 @@
     <strong>{{ row.name }}</strong>
    </template>
    <template slot-scope="{ row }" slot="action">
-    <Button type="error" size="small" @click="todelete(row)"><Icon type="md-trash" />删除</Button>
-      <Button
+    <Button type="error" size="small" @click="todelete(row)"
+     ><Icon type="md-trash" />删除</Button
+    >
+    <Button
      v-show="row.vod"
      type="warning"
      size="small"
@@ -91,6 +93,13 @@ export default {
     {
      title: "文件大小",
      key: "size",
+     render: (h, params) => {
+      let value = params.row.size || 0;
+      if (value > 100 * 1024) {
+          return h("span", Math.round((value / 1024 / 1024) * 100) / 100 + "MB");
+       } else 
+        return h("span", Math.round((value / 1024) * 100) / 100 + "KB");
+      }
     },
     {
      title: "操作",
