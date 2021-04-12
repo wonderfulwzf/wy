@@ -91,6 +91,10 @@ export default {
      key: "name",
     },
     {
+     title: "文件来源",
+     key: "resource",
+    },
+    {
      title: "文件大小",
      key: "size",
      render: (h, params) => {

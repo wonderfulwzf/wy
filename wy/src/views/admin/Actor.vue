@@ -81,6 +81,7 @@
      <Upload
       :action="uploadAction"
       name="file"
+      :data="source"
       :on-success="uploadSuccess"
       :format="['jpg', 'jpeg', 'png']"
       :on-error="uploadError"
@@ -117,6 +118,7 @@
       enctype="multipart/form-data"
       :action="uploadAction"
       name="file"
+      :data="source"
       :on-success="uploadSuccess"
       :format="['jpg', 'jpeg', 'png']"
       :on-error="uploadError"
@@ -151,6 +153,8 @@ export default {
    actor: {}, //演员
    //文件上传接口
    uploadAction: process.env.VUE_APP_SERVER + "/file/file/file",
+   //图片来源
+   source:{name:SOURCE.ACYOR_PIC.value}
   };
  },
  mounted: function () {
