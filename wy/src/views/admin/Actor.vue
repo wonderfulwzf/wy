@@ -74,11 +74,24 @@
     <FormItem label="名称">
      <Input v-model="actor.name"></Input>
     </FormItem>
-    <FormItem label="图片">
-     <Input v-model="actor.image"></Input>
-    </FormItem>
     <FormItem label="简介">
      <Input v-model="actor.intro"></Input>
+    </FormItem>
+    <FormItem label="图片">
+     <Upload
+      :action="uploadAction"
+      name="file"
+      :on-success="uploadSuccess"
+      :format="['jpg', 'jpeg', 'png']"
+      :on-error="uploadError"
+      ref="addActorImageUpload"
+      enctype="multipart/form-data"
+     >
+      <Button icon="ios-cloud-upload-outline">上传图片</Button>
+     </Upload>
+    </FormItem>
+    <FormItem label="图片" v-show="actor.image">
+     <img v-bind:src="actor.image" style="width:253px;height:253px" />
     </FormItem>
    </Form>
   </Modal>
@@ -96,11 +109,24 @@
     <FormItem label="名称">
      <Input v-model="actor.name"></Input>
     </FormItem>
-    <FormItem label="图片">
-     <Input v-model="actor.image"></Input>
-    </FormItem>
     <FormItem label="简介">
      <Input v-model="actor.intro"></Input>
+    </FormItem>
+    <FormItem label="图片">
+     <Upload
+      enctype="multipart/form-data"
+      :action="uploadAction"
+      name="file"
+      :on-success="uploadSuccess"
+      :format="['jpg', 'jpeg', 'png']"
+      :on-error="uploadError"
+      ref="updateActorImageUpload"
+     >
+      <Button icon="ios-cloud-upload-outline">上传图片</Button>
+     </Upload>
+    </FormItem>
+    <FormItem label="图片" v-show="actor.image">
+     <img v-bind:src="actor.image"  style="width:253px;height:253px"/>
     </FormItem>
    </Form>
   </Modal>
@@ -123,6 +149,8 @@ export default {
    totalRecord: 0,
    pageSize: 3,
    actor: {}, //演员
+   //文件上传接口
+   uploadAction: process.env.VUE_APP_SERVER + "/file/file/file",
   };
  },
  mounted: function () {
@@ -206,6 +234,7 @@ export default {
   //打开更新模态框
   toUpdate(actor) {
    let _this = this;
+    _this.$refs["updateActorImageUpload"].clearFiles();
    _this.$Spin.show({
     render: (h) => {
      return h("div", [
@@ -231,6 +260,7 @@ export default {
   //打开新增模态框
   toAdd() {
    let _this = this;
+   _this.$refs["addActorImageUpload"].clearFiles();
    _this.$Spin.show({
     render: (h) => {
      return h("div", [
@@ -255,7 +285,6 @@ export default {
   //修改演员
   update() {
    let _this = this;
-
    _this.$ajax
     .post(process.env.VUE_APP_SERVER + "/business/actor/update", _this.actor)
     .then(
@@ -281,21 +310,37 @@ export default {
    this.modal_loading = true;
    setTimeout(() => {
     let _this = this;
-    _this.$ajax.get(process.env.VUE_APP_SERVER + "/business/actor/delete/" + id).then(
-     //响应结果
-     (response) => {
-      this.modal_loading = false;
-      this.modal_delete = false;
-      if (response.data.success) {
-       console.log("删除演员信息", response);
-       _this.list(1);
-       this.$Message.info("删除演员ok");
-      } else {
-       this.$Message.error("出错了,告知老王修复");
+    _this.$ajax
+     .get(process.env.VUE_APP_SERVER + "/business/actor/delete/" + id)
+     .then(
+      //响应结果
+      (response) => {
+       this.modal_loading = false;
+       this.modal_delete = false;
+       if (response.data.success) {
+        console.log("删除演员信息", response);
+        _this.list(1);
+        this.$Message.info("删除演员ok");
+       } else {
+        this.$Message.error("出错了,告知老王修复");
+       }
       }
-     }
-    );
+     );
    }, 500);
+  },
+  //文件上传成功
+  uploadSuccess(response) {
+   let _this = this;
+   _this.actor.image = response.data;
+  },
+  uploadError(error, file, fileList) {
+   this.$Notice.error({
+    title: "上传文件出错",
+    desc: "位置：演员,尽快通知老王修复，上传文件错误，",
+   });
+   console.log(error);
+   console.log(fileList);
+   console.log(file);
   },
  },
 };
