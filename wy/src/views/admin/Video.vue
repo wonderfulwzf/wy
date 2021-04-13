@@ -65,27 +65,45 @@
      <FormItem label="标题">
       <Input type="text" v-model="video.title"></Input>
      </FormItem>
-     <FormItem label="视频地址">
-      <Input type="text" v-model="video.video"></Input>
-     </FormItem>
-     <FormItem label="时长">
-      <Input type="text" v-model="video.time"></Input>
-     </FormItem>
      <FormItem label="顺序">
       <Input type="text" v-model="video.sort"></Input>
      </FormItem>
-     <FormItem label="vod">
-      <Input type="text" v-model="video.vod"></Input>
+     <FormItem label="收费">
+      <Select style="width: 200px" v-model="video.charge">
+       <Option
+        v-for="item in VIDEO_CHARGE"
+        :value="item.key"
+        :key="item.value"
+        >{{ item.value }}</Option
+       >
+      </Select>
      </FormItem>
-     收费
-     <Select style="width: 200px" v-model="video.charge">
-      <Option
-       v-for="item in VIDEO_CHARGE"
-       :value="item.key"
-       :key="item.value"
-       >{{ item.value }}</Option
+       <FormItem label="时长">
+      <Input type="text" v-model="video.time" disabled></Input>
+     </FormItem>
+      <FormItem label="视频地址">
+      <Input type="text" v-model="video.video" disabled></Input>
+     </FormItem>
+      <FormItem label="视频" v-show="video.video" >
+        <player ref="addvideoplayer" :player-id="'addvideoplayer'"></player>
+     </FormItem>
+     <FormItem label="vod">
+      <Input type="text" v-model="video.vod" disabled></Input>
+     </FormItem>
+     <FormItem label="视频">
+      <Upload
+       enctype="multipart/form-data"
+       :action="uploadAction"
+       name="video"
+       :data="source"
+       :on-success="uploadSuccess"
+       :format="['MP4']"
+       :on-error="uploadError"
+       ref="addVideo"
       >
-     </Select>
+       <Button icon="ios-cloud-upload-outline">上传video</Button>
+      </Upload>
+     </FormItem>
     </Form>
    </div>
    <div slot="footer">
@@ -106,27 +124,48 @@
      <FormItem label="标题">
       <Input type="text" v-model="video.title"></Input>
      </FormItem>
-     <FormItem label="视频地址">
-      <Input type="text" v-model="video.video"></Input>
-     </FormItem>
-     <FormItem label="时长">
-      <Input type="text" v-model="video.time"></Input>
-     </FormItem>
      <FormItem label="顺序">
       <Input type="text" v-model="video.sort"></Input>
      </FormItem>
-     <FormItem label="vod">
-      <Input type="text" v-model="video.vod"></Input>
+     <FormItem label="收费">
+      <Select style="width: 200px" v-model="video.charge">
+       <Option
+        v-for="item in VIDEO_CHARGE"
+        :value="item.key"
+        :key="item.value"
+        >{{ item.value }}</Option
+       >
+      </Select>
      </FormItem>
-     收费
-     <Select style="width: 200px" v-model="video.charge">
-      <Option
-       v-for="item in VIDEO_CHARGE"
-       :value="item.key"
-       :key="item.value"
-       >{{ item.value }}</Option
+      <FormItem label="时长">
+      <Input type="text" v-model="video.time" disabled></Input>
+     </FormItem>
+     <FormItem label="视频地址">
+      <Input type="text" v-model="video.video" disabled></Input>
+     </FormItem>
+      <FormItem label="视频" >
+        <video :src="video.video" style="width:250px;height:250px"></video>
+     </FormItem>
+      <FormItem label="视频" >
+        <player ref="updatevideoplayer"  :player-id="'updatevideoplayer'"></player>
+     </FormItem>
+        <FormItem label="vod">
+      <Input type="text" v-model="video.vod" disabled></Input>
+     </FormItem>
+     <FormItem label="视频">
+      <Upload
+       enctype="multipart/form-data"
+       :action="uploadAction"
+       name="video"
+       :data="source"
+       :on-success="uploadSuccess"
+       :format="['MP4']"
+       :on-error="uploadError"
+       ref="updateVideo"
       >
-     </Select>
+       <Button icon="ios-cloud-upload-outline">上传video</Button>
+      </Upload>
+     </FormItem>
     </Form>
    </div>
    <div slot="footer">
@@ -136,7 +175,9 @@
  </div>
 </template>
 <script>
+import Player from '../../components/Player.vue';
 export default {
+ components: { Player },
  name: "wy_video",
 
  //返回值
@@ -207,7 +248,7 @@ export default {
           click: () => {
            let _this = this;
            _this.video = params.row;
-           _this.modal_update = true;
+           _this.toUpdate(_this.video);
           },
          },
         },
@@ -254,6 +295,12 @@ export default {
    VIDEO_CHARGE: VIDEO_CHARGE,
    //视频概览
    summary: {},
+   //上传文件地址
+   uploadAction: process.env.VUE_APP_SERVER + "/file/file/vod",
+   //图片来源
+   source: { name: SOURCE.VIDEO.value },
+   //播放器名称
+   playname:"",
   };
  },
  mounted: function () {
@@ -346,31 +393,7 @@ export default {
   //打开更新模态框
   toUpdate(video) {
    let _this = this;
-   _this.$Spin.show({
-    render: (h) => {
-     return h("div", [
-      h("Icon", {
-       class: "demo-spin-icon-load",
-       props: {
-        type: "ios-loading",
-        size: 18,
-       },
-      }),
-      h("div", "Loading"),
-     ]);
-    },
-   });
-   setTimeout(() => {
-    this.$Spin.hide();
-    console.log(video);
-    //消除双向绑定，复制对象
-    _this.video = $.extend({}, video);
-    _this.modal_update = true;
-   }, 500);
-  },
-  //打开新增模态框
-  toAdd() {
-   let _this = this;
+   _this.$refs["updateVideo"].clearFiles();
    _this.$Spin.show({
     render: (h) => {
      return h("div", [
@@ -388,7 +411,41 @@ export default {
    setTimeout(() => {
     _this.$Spin.hide();
     //消除双向绑定，复制对象
-    _this.video = {};
+    _this.video = $.extend({}, video);
+    console.log(_this.video.video);
+    _this.playname="updatevideoplayer";
+    console.log( _this.playname);
+    _this.$refs[_this.playname].playUrl(_this.video.video);
+    _this.modal_update = true;
+    //播放视频
+   }, 500);
+  },
+  //打开新增模态框
+  toAdd() {
+   let _this = this;
+   _this.$refs["updateVideo"].clearFiles();
+   _this.$Spin.show({
+    render: (h) => {
+     return h("div", [
+      h("Icon", {
+       class: "demo-spin-icon-load",
+       props: {
+        type: "ios-loading",
+        size: 18,
+       },
+      }),
+      h("div", "Loading"),
+     ]);
+    },
+   });
+   setTimeout(() => {
+    _this.$Spin.hide();
+    //消除双向绑定，复制对象
+    _this.video = {
+      time:"",
+      vod:"",
+      image:"",
+    };
     _this.modal_add = true;
    }, 500);
   },
@@ -439,6 +496,26 @@ export default {
       }
      );
    }, 500);
+  },
+  //文件上传成功
+  uploadSuccess(response) {
+    let _this  = this;
+   console.log(response);
+   _this.video.video = response.data.path;
+   console.log(_this.video.video);
+   _this.video.vod = response.data.vod
+   //获取时长
+   _this.video.time = response.data.size;
+   //自动播放视频
+  },
+  uploadError(error, file, fileList) {
+   this.$Notice.error({
+    title: "上传文件出错",
+    desc: "位置：演员,尽快通知老王修复，上传文件错误，",
+   });
+   console.log(error);
+   console.log(fileList);
+   console.log(file);
   },
  },
 };

@@ -27,12 +27,20 @@
     <Button type="error" size="small" @click="todelete(row)"
      ><Icon type="md-trash" />删除</Button
     >
+    
     <Button
-     v-show="row.vod"
+     v-if="row.vod!=null"
      type="warning"
      size="small"
      style="margin-right: 5px"
      ><Icon type="md-videocam" />播放</Button
+    >
+    <Button
+     v-else
+     type="warning"
+     size="small"
+     style="margin-right: 5px"
+     ><Icon type="md-eye" />查看</Button
     >
    </template>
   </Table>
