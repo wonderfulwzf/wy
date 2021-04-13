@@ -44,9 +44,7 @@
       //vod播放
       playVod (vod) {
         let _this = this;
-        Loading.show();
         _this.$ajax.get(process.env.VUE_APP_SERVER + '/file/file/get-auth/' + vod).then((response)=>{
-          Loading.hide();
           let resp = response.data;
           if (resp.success) {
             //如果已经有播放器了，则将播放器div删除
@@ -64,7 +62,7 @@
               autoplay: false,
               vid: vod,
               playauth: resp.data,
-              cover: 'http://liveroom-img.oss-cn-qingdao.aliyuncs.com/logo.png',
+              cover: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2345405443,3355156438&fm=11&gp=0.jpg',
               encryptType:1, //当播放私有加密流时需要设置。
             },function(player){// eslint-disable-line no-unused-vars
               console.log('播放器创建好了。')

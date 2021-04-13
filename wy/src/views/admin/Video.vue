@@ -172,6 +172,10 @@
     <Button type="primary" @click="update">确定修改</Button>
    </div>
   </Modal>
+  <!-- 播放 -->
+  <Modal v-model="modal_video"  @on-cancel="cancel">
+     <player ref="lookvideoplayer" :player-id="'lookvideoplayer'"></player>
+  </Modal>
  </div>
 </template>
 <script>
@@ -282,7 +286,11 @@ export default {
           size: "small",
          },
          on: {
-          click: () => {},
+          click: () => {
+            let _this = this;
+            console.log(params.row.vod)
+           _this.tolookvideo(params.row.vod);
+          },
          },
         },
         "播放"
@@ -301,6 +309,8 @@ export default {
    source: { name: SOURCE.VIDEO.value },
    //播放器名称
    playname:"",
+   //播放弹出框
+   modal_video:false,
   };
  },
  mounted: function () {
@@ -414,7 +424,6 @@ export default {
     _this.video = $.extend({}, video);
     console.log(_this.video.video);
     _this.playname="updatevideoplayer";
-    console.log( _this.playname);
     _this.$refs[_this.playname].playUrl(_this.video.video);
     _this.modal_update = true;
     //播放视频
@@ -517,6 +526,13 @@ export default {
    console.log(fileList);
    console.log(file);
   },
+  //打开播放按钮
+  tolookvideo(vod){
+    let _this = this;
+    _this.modal_video = true;
+    _this.playname="lookvideoplayer";
+    _this.$refs[_this.playname].playVod(vod);
+  }
  },
 };
 </script>
